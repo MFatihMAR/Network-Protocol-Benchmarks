@@ -3,22 +3,29 @@ package proxy
 import "net"
 
 type Proxy struct {
-	LastError error
+	NorthRecvCh chan []byte
+	NorthSendCh chan []byte
+	SouthRecvCh chan []byte
+	SouthSendCh chan []byte
 
-	FakeRecvCh chan []byte
-	FakeSendCh chan []byte
-
-	RealRecvCh chan []byte
-	RealSendCh chan []byte
-
-	fakeRecvBuf []byte
-	realRecvBuf []byte
+	Err error
 
 	conn *net.UDPConn
+	buf  []byte
+	ok   bool
 }
 
-func NewProxy(fakePort, realPort uint16, bufferSize uint16) (*Proxy, error) {
-	// todo: check `fakePort`, `realPort` and `bufferSize` arguments
+type Config struct {
+	ListenPort uint16
+	NorthPort  uint16
+	SouthPort  uint16
+
+	SockBufSize uint16
+	ChanBufLen  uint16
+}
+
+func NewProxy(config *Config) (*Proxy, error) {
+	// todo: check `config` arguments
 
 	return nil, nil
 }
