@@ -16,7 +16,7 @@ type Proxy struct {
 }
 
 type Config struct {
-	ListenPort uint16
+	ProxyPort uint16
 	NorthPort  uint16
 	SouthPort  uint16
 
@@ -31,4 +31,9 @@ func NewProxy(config *Config) (*Proxy, error) {
 }
 
 func (p *Proxy) Close() {
+	if !p.ok {
+		return
+	}
+
+	// todo
 }
