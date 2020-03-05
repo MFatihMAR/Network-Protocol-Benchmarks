@@ -39,6 +39,7 @@ func TestNonProxy(t *testing.T) {
 	defer close(southRecvCh)
 
 	run := true
+	defer func() { run = false }()
 	msgCount := 128
 
 	recvFunc := func(sock *net.UDPConn, recvCh chan []byte, port int) {
@@ -91,11 +92,12 @@ func TestNonProxy(t *testing.T) {
 			idx++
 		default:
 			if time.Since(startTime) > time.Second*10 {
-				assert(t, true, "either north or south socket sent less packet than expected")
+				assert(t, true, "either north or south socket sent less packets than expected (timeout)")
+			} else {
+				assert(t, t.Failed(), "one of the goroutines failed")
 			}
 		}
 	}
-	run = false
 }
 
 func TestProxy(t *testing.T) {
