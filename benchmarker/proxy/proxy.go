@@ -23,5 +23,5 @@ func NewProxy(fakePort, realPort uint16, bufferSize uint16) (*Proxy, error) {
 	return nil, nil
 }
 
-func (proxy *Proxy) Close() {
+func (p *Proxy) Close() {
 }
