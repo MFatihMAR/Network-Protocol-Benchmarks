@@ -140,13 +140,11 @@ func (p *Proxy) sendRoutine() {
 			if !nOk {
 				p.Err = errors.New("north send channel is closed")
 				p.Close()
-				return
 			} else {
 				_, err := p.conn.WriteToUDP(nPkt, p.northAddr)
 				if err != nil {
 					p.Err = err
 					p.Close()
-					return
 				}
 			}
 		case sPkt, sOk := <-p.SouthSendCh:
@@ -156,13 +154,11 @@ func (p *Proxy) sendRoutine() {
 			if !sOk {
 				p.Err = errors.New("south send channel is closed")
 				p.Close()
-				return
 			} else {
 				_, err := p.conn.WriteToUDP(sPkt, p.southAddr)
 				if err != nil {
 					p.Err = err
 					p.Close()
-					return
 				}
 			}
 		}
