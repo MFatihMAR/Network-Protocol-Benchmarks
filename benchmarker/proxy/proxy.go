@@ -34,33 +34,55 @@ type Config struct {
 	ChanBufLen  uint16
 }
 
-func NewProxy(config *Config) (*Proxy, error) {
-	// todo: check `config` arguments
+func NewProxy(cfg *Config) (*Proxy, error) {
+	if cfg == nil {
+		return nil, errors.New("config is required")
+	}
+	if cfg.ProxyPort == 0 {
+		return nil, errors.New("proxy port is required")
+	}
+	if cfg.NorthPort == 0 {
+		return nil, errors.New("north port is required")
+	}
+	if cfg.SouthPort == 0 {
+		return nil, errors.New("south port is required")
+	}
+	if cfg.ProxyPort == cfg.NorthPort ||
+		cfg.ProxyPort == cfg.SouthPort ||
+		cfg.NorthPort == cfg.SouthPort {
+		return nil, errors.New("all ports must be different")
+	}
+	if cfg.SockBufSize < 68 {
+		return nil, errors.New("socket buffer cannot be smaller than 68 (minimum MTU size)")
+	}
+	if cfg.ChanBufLen < 64 {
+		return nil, errors.New("channels should buffer at least 64 packets")
+	}
 
-	proxyAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", config.ProxyPort))
+	proxyAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", cfg.ProxyPort))
 	if err != nil {
 		return nil, err
 	}
-	northAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", config.NorthPort))
+	northAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", cfg.NorthPort))
 	if err != nil {
-		return  nil, err
+		return nil, err
 	}
-	southAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", config.SouthPort))
+	southAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", cfg.SouthPort))
 	if err != nil {
 		return nil, err
 	}
 
 	ok := false
 	p := Proxy{
-		NorthRecvCh: make(chan []byte, config.ChanBufLen),
-		NorthSendCh: make(chan []byte, config.ChanBufLen),
-		SouthRecvCh: make(chan []byte, config.ChanBufLen),
-		SouthSendCh: make(chan []byte, config.ChanBufLen),
+		NorthRecvCh: make(chan []byte, cfg.ChanBufLen),
+		NorthSendCh: make(chan []byte, cfg.ChanBufLen),
+		SouthRecvCh: make(chan []byte, cfg.ChanBufLen),
+		SouthSendCh: make(chan []byte, cfg.ChanBufLen),
 
 		northAddr: northAddr,
 		southAddr: southAddr,
 
-		buf:  make([]byte, config.SockBufSize),
+		buf:  make([]byte, cfg.SockBufSize),
 		conn: nil,
 
 		closed: false,
