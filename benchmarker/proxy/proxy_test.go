@@ -173,10 +173,16 @@ func TestProxy(t *testing.T) {
 	go func() {
 		for run {
 			select {
-			case northPkt := <-proxy.NorthRecvCh:
-				proxy.SouthSendCh <- northPkt
-			case southPkt := <-proxy.SouthRecvCh:
-				proxy.NorthSendCh <- southPkt
+			case northPkt, ok := <-proxy.NorthRecvCh:
+				if run {
+					assert(t, !ok, "north recv chan closed while running")
+					proxy.SouthSendCh <- northPkt
+				}
+			case southPkt, ok := <-proxy.SouthRecvCh:
+				if run {
+					assert(t, !ok, "south recv chan closed while running")
+					proxy.NorthSendCh <- southPkt
+				}
 			}
 		}
 	}()
