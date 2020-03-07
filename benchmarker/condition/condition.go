@@ -13,6 +13,14 @@ type Condition struct {
 }
 
 type Config struct {
+	LatencyMsMax int   // todo: explain
+	LatencyMsMin int   // todo: explain
+	LossPercMax  int   // todo: explain
+	LossPercMin  int   // todo: explain
+	BandwidthMax int   // todo: explain
+	BandwidthMin int   // todo: explain
+	MTUs         []int // todo: explain
+	UpdateRateMs int   // todo: explain
 }
 
 func NewCondition(cfg *Config) (*Condition, error) {
