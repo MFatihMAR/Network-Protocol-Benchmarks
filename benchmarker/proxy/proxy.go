@@ -59,15 +59,15 @@ func NewProxy(cfg *Config) (*Proxy, error) {
 		return nil, errors.New("channels should buffer at least 64 packets")
 	}
 
-	proxyAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", cfg.ProxyPort))
+	pAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf(":%d", cfg.ProxyPort))
 	if err != nil {
 		return nil, err
 	}
-	northAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", cfg.NorthPort))
+	nAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", cfg.NorthPort))
 	if err != nil {
 		return nil, err
 	}
-	southAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", cfg.SouthPort))
+	sAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", cfg.SouthPort))
 	if err != nil {
 		return nil, err
 	}
@@ -79,8 +79,8 @@ func NewProxy(cfg *Config) (*Proxy, error) {
 		SouthRecvCh: make(chan []byte, cfg.ChanBufLen),
 		SouthSendCh: make(chan []byte, cfg.ChanBufLen),
 
-		northAddr: northAddr,
-		southAddr: southAddr,
+		northAddr: nAddr,
+		southAddr: sAddr,
 
 		buf:  make([]byte, cfg.SockBufSize),
 		conn: nil,
@@ -93,7 +93,7 @@ func NewProxy(cfg *Config) (*Proxy, error) {
 		}
 	}()
 
-	p.conn, err = net.ListenUDP("udp", proxyAddr)
+	p.conn, err = net.ListenUDP("udp", pAddr)
 	if err != nil {
 		return nil, err
 	}
