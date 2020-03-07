@@ -33,6 +33,11 @@ func (c *Condition) UseBandwidth(size int) bool {
 	return false
 }
 
+func (c *Condition) CheckMTU(size int) bool {
+	// todo
+	return false
+}
+
 func (c *Condition) CheckLoss() bool {
 	// todo
 	return false
